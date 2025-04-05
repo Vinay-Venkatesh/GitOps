@@ -15,6 +15,6 @@ spec:
     spec:
       containers:
       - name: simple-app
-        image: docker.io/codedact/sample-app:v1
+        image: docker.io/codedact/sample-app:v2
         ports:
         - containerPort: 8080
