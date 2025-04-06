@@ -1,0 +1,28 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: app-rollout
+spec:
+  replicas: 2
+  strategy:
+    blueGreen: 
+      activeService: rollout-bluegreen-active
+      previewService: rollout-bluegreen-preview
+      autoPromotionEnabled: false
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: simple-web-app
+  template:
+    metadata:
+      labels:
+        app: simple-web-app
+    spec:
+      containers:
+      - name: simple-webapp
+        image: docker.io/codedact/sample-app:v1
+        ports:
+        - name: http
+          containerPort: 8080
+          protocol: TCP
