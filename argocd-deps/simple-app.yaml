@@ -1,0 +1,19 @@
+# Application creation with all syncPolicy in place.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: demo-app
+  namespace: argocd
+spec:
+  destination:
+    namespace: sample-app
+    server: https://kubernetes.default.svc
+  source:
+    repoURL: https://github.com/Vinay-Venkatesh/GitOps.git
+    path: sample-app
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+  syncOptions:
+      - CreateNamespace=true

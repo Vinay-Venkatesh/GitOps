@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: sample-project
+  namespace: argocd
+  # Finalizer that ensures that project is not deleted until it is not referenced by any application
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  description: Thie project is for sample-application
+  # manifests to be deployed from the source repository
+  sourceRepos:
+  - 'https://github.com/Vinay-Venkatesh/GitOps.git'
+  # This project is specific to sample-app namespace in the same cluster
+  destinations:
+  - namespace: sample-app
+    server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'
