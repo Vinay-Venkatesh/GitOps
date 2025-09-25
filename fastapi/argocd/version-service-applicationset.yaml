@@ -18,7 +18,7 @@ spec:
       source:
         repoURL: https://github.com/Vinay-Venkatesh/GitOps.git
         targetRevision: main
-        path: fastapi/charts/version-service/version-service-values
+        path: fastapi/charts/version-service
         helm:
           valueFiles:
             - '{{valuesFile}}'
