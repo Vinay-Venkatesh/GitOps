@@ -3,6 +3,10 @@ kind: ApplicationSet
 metadata:
   name: version-service
   namespace: argocd
+  annotations:
+    argocd-image-updater.argoproj.io/image-list: 720736521509.dkr.ecr.us-west-2.amazonaws.com/codeact:~1.0
+    argocd-image-updater.argoproj.io/write-back-method: argocd
+    argocd-image-updater.argoproj.io/update-strategy: newest-build
 spec:
   generators:
     - list:
