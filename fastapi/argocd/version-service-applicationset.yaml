@@ -16,7 +16,7 @@ spec:
     spec:
       project: default
       source:
-        repoURL: https://github.com/your-org/gitops-repo.git
+        repoURL: https://github.com/Vinay-Venkatesh/GitOps
         targetRevision: main
         path: fastapi/charts/version-service
         helm:
