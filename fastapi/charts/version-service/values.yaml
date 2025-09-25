@@ -1,9 +1,9 @@
 replicaCount: 1
 
 image:
-  repository: ghcr.io/your-org/version-service
+  repository: 720736521509.dkr.ecr.ap-south-1.amazonaws.com/codeact
   pullPolicy: IfNotPresent
-  tag: ""
+  tag: "0.1.0"
 
 serviceAccount:
   create: true
@@ -12,7 +12,7 @@ serviceAccount:
 service:
   type: NodePort
   port: 8000
-  nodePort: 37453
+  nodePort: 30080
 
 resources: {}
 

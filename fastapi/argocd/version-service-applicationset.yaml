@@ -9,16 +9,16 @@ spec:
         elements:
           - name: dev
             namespace: version-service-dev
-            valuesFile: argocd/version-service-values/dev.yaml
+            valuesFile: values.yaml
   template:
     metadata:
       name: version-service-{{name}}
     spec:
       project: default
       source:
-        repoURL: https://github.com/Vinay-Venkatesh/GitOps
+        repoURL: https://github.com/Vinay-Venkatesh/GitOps.git
         targetRevision: main
-        path: fastapi/charts/version-service
+        path: fastapi/charts/version-service/version-service-values
         helm:
           valueFiles:
             - '{{valuesFile}}'
