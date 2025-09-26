@@ -12,7 +12,7 @@ serviceAccount:
 service:
   type: NodePort
   port: 8000
-  nodePort: 30080
+  nodePort: 30180
 
 resources: {}
 
