@@ -12,7 +12,14 @@ spec:
             valuesFile: values.yaml
   template:
     metadata:
-      name: version-service-{{name}}    
+      name: version-service-{{name}}
+      annotations:
+        argocd-image-updater.argoproj.io/image-list: codeact=720736521509.dkr.ecr.ap-south-1.amazonaws.com/codeact:~1.0
+        argocd-image-updater.argoproj.io/codeact.helm.image-name: image.repository
+        argocd-image-updater.argoproj.io/codeact.helm.image-tag: image.tag
+        argocd-image-updater.argoproj.io/write-back-method: git
+        argocd-image-updater.argoproj.io/write-back-target: helmvalues
+        argocd-image-updater.argoproj.io/update-strategy: newest-build      
     spec:
       project: default
       source:
@@ -22,6 +29,13 @@ spec:
         helm:
           valueFiles:
             - '{{valuesFile}}'
+          parameters:
+            - name: service.type
+              value: NodePort
+            - name: service.port
+              value: "8000"
+            - name: service.nodePort
+              value: "30190"
       destination:
         server: https://kubernetes.default.svc
         namespace: '{{namespace}}'

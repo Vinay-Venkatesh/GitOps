@@ -1,0 +1,30 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: version-service-dev
+  namespace: argocd
+  annotations:
+    #argocd-image-updater.argoproj.io/image-list: 720736521509.dkr.ecr.ap-south-1.amazonaws.com/codeact:~1.0
+    argocd-image-updater.argoproj.io/image-list: codeact=720736521509.dkr.ecr.ap-south-1.amazonaws.com/codeact:~1.0
+    argocd-image-updater.argoproj.io/codeact.helm.image-name: image.repository
+    argocd-image-updater.argoproj.io/codeact.helm.image-tag: image.tag
+    argocd-image-updater.argoproj.io/write-back-method: argocd
+    argocd-image-updater.argoproj.io/update-strategy: newest-build
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Vinay-Venkatesh/GitOps.git
+    targetRevision: main
+    path: fastapi/charts/version-service
+    helm:
+      valueFiles:
+        - values.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: version-service-dev
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

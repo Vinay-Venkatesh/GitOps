@@ -55,7 +55,9 @@ extraEnv: []
   #   value: "00000000-0000-0000-0000-000000000000"
 
 # -- Extra envFrom to pass to argocd-image-updater
-extraEnvFrom: []
+extraEnvFrom:
+  - secretRef:
+      name: aiu-git-https
   # - configMapRef:
   #     name: config-map-name
   # - secretRef:
@@ -118,6 +120,10 @@ volumes: []
   #    emptyDir: {}
 
 config:
+  gitCommitUser: "Argo CD"
+  gitCommitMail: "argocd@local"
+  gitCommitTemplate: "chore: bump {{ .Image }} to {{ .NewTag }}"
+  
   # -- Name of the ConfigMap
   name: argocd-image-updater-config
   # -- API kind that is used to manage Argo CD applications (`kubernetes` or `argocd`)
@@ -166,11 +172,11 @@ config:
   # -- Argo CD Image Updater registries list configuration. More information [here](https://argocd-image-updater.readthedocs.io/en/stable/configuration/registries/).
   registries:
     - name: ECR
-      api_url: 720736521509.dkr.ecr.ap-south-1.amazonaws.com/codeact
-      prefix: 720736521509.dkr.ecr.us-west-2.amazonaws.com
+      api_url: https://720736521509.dkr.ecr.ap-south-1.amazonaws.com
+      prefix: 720736521509.dkr.ecr.ap-south-1.amazonaws.com
       ping: yes
       insecure: no
-      credentials: ext:/scripts/login.sh
+      credentials: ext:/scripts/ecr_login.sh
       credsexpire: 6h  
     # - name: Docker Hub
     #   api_url: https://registry-1.docker.io
@@ -214,18 +220,25 @@ config:
 # whether to mount authentication scripts, if enabled, the authentication scripts will be mounted on /scripts that can be used to authenticate with registries (Azure, ECR)
 # refer to https://argocd-image-updater.readthedocs.io/en/stable/configuration/registries/#specifying-credentials-for-accessing-container-registries for more info
 authScripts:
-  # -- Whether to mount the defined scripts that can be used to authenticate with a registry, the scripts will be mounted at `/scripts`
-  enabled: true  
-  # -- Name of the authentication scripts ConfigMap
-  name: argocd-image-updater-authscripts
-  # -- Map of key-value pairs where the key consists of the name of the script and the value the contents.
-  ## Expect the script to output Docker credentials in the form: <username>:<password>
-  ## Authentication scripts can be used for various cloud providers like ECR or Azure Workload Identity.
-  ## For Azure Workload Identity, you can place your authentication script here to handle token acquisition.
+  # -- the scripts will be mounted at `/scripts`
+  enabled: true
   scripts:
-    login.sh: | 
-        #!/bin/sh
-        aws ecr --region "ap-south-1" get-authorization-token --output text --query 'authorizationData[].authorizationToken' | base64 -d
+    ecr_login.sh: |
+      #!/bin/sh
+      set -eu
+
+      # Redirect AWS CLI writes to a writable path
+      export HOME=/tmp
+      mkdir -p /tmp/.aws
+      export AWS_CONFIG_FILE=/tmp/.aws/config
+      export AWS_SHARED_CREDENTIALS_FILE=/tmp/.aws/credentials
+      export AWS_EC2_METADATA_DISABLED=true
+
+      REGION="${AWS_REGION:-ap-south-1}"
+      PASSWORD="$(aws --no-cli-pager ecr get-login-password --region "$REGION")"
+      # single line, no trailing newline:
+      printf 'AWS:%s' "$PASSWORD"
+  # -- Name of the authentication scripts ConfigMap
     # auth1.sh: |
     #   #!/bin/sh
     #   echo "auth script 1 here"
@@ -243,7 +256,8 @@ serviceAccount:
   # -- Specifies whether a service account should be created
   create: true
   # -- Annotations to add to the service account
-  annotations: {}
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::720736521509:role/eks-argocd-image-updater
   # Example for Azure Workload Identity:
     # azure.workload.identity/client-id: "xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
   # -- Labels to add to the service account
@@ -252,7 +266,7 @@ serviceAccount:
   #  azure.workload.identity/use: "true"
   # -- The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template.
-  name: ""
+  name: eks-argocd-image-updater
 
 # -- Pod Annotations for the deployment
 podAnnotations: {}
