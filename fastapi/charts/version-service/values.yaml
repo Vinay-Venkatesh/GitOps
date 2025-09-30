@@ -3,7 +3,7 @@ replicaCount: 1
 image:
   repository: 720736521509.dkr.ecr.ap-south-1.amazonaws.com/codeact
   pullPolicy: IfNotPresent
-  tag: "1.0.7"
+  tag: "1.0.8"
 
 serviceAccount:
   create: true
