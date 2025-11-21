@@ -17,3 +17,8 @@ spec:
         image: nginx:broker-tag
         ports:
         - containerPort: 80
+path: spec.template.spec.containers[0].image
+old_value: nginx:broker-tag
+new_value: nginx:latest
+calculation: N/A - image tag correction based on manifest error and previous working
+  state
