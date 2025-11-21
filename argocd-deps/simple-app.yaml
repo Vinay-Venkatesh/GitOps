@@ -10,10 +10,11 @@ spec:
     server: https://kubernetes.default.svc
   source:
     repoURL: https://github.com/Vinay-Venkatesh/GitOps.git
-    path: sample-app
+    path: simple-app
+  project: sample-project
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
-  syncOptions:
+    syncOptions:
       - CreateNamespace=true

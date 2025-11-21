@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: nginx
+  namespace: argocd
+  # Finalizer that ensures that project is not deleted until it is not referenced by any application
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  description: Thie project is for nginx application
+  # manifests to be deployed from the source repository
+  sourceRepos:
+  - 'https://github.com/Vinay-Venkatesh/GitOps.git'
+  # This project is specific to nginx namespace in the same cluster
+  destinations:
+  - namespace: nginx
+    server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'
